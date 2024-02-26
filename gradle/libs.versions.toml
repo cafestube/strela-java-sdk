@@ -1,0 +1,17 @@
+[versions]
+shadow = "8.1.1"
+fabricKubernetesClient = "6.10.0"
+
+[libraries]
+fabricKubernetesClient = { module = "io.fabric8:kubernetes-client", version.ref = "fabricKubernetesClient" }
+fabricKubernetesGeneratorAnnotations = { module = "io.fabric8:generator-annotations", version.ref = "fabricKubernetesClient" }
+
+[bundles]
+fabricKubernetes = [
+    "fabricKubernetesClient",
+    "fabricKubernetesGeneratorAnnotations"
+]
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+fabricJavaGenerator = { id = "io.fabric8.java-generator", version.ref = "fabricKubernetesClient" }
