@@ -1,6 +1,7 @@
 [versions]
 shadow = "8.1.1"
 fabricKubernetesClient = "6.10.0"
+sonatypeCentralPortalPublisher = "1.1.1"
 
 [libraries]
 fabricKubernetesClient = { module = "io.fabric8:kubernetes-client", version.ref = "fabricKubernetesClient" }
@@ -15,3 +16,4 @@ fabricKubernetes = [
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 fabricJavaGenerator = { id = "io.fabric8.java-generator", version.ref = "fabricKubernetesClient" }
+sonatypeCentralPortalPublisher = { id = "net.thebugmc.gradle.sonatype-central-portal-publisher", version.ref = "sonatypeCentralPortalPublisher" }
