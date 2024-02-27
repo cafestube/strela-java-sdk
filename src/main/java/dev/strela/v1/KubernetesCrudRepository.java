@@ -105,8 +105,7 @@ public abstract class KubernetesCrudRepository<R extends CustomResource> {
    * @return a future that will be completed when the resource is updated. The future will contain the updated resource
    */
   public CompletableFuture<R> update(String namespace, String name, Consumer<R> updater) {
-    return CompletableFuture.supplyAsync(() -> {
-      R resource = get(namespace, name).join();
+    return get(namespace, name).thenApplyAsync(resource -> {
       updater.accept(resource);
       return update(namespace, resource).join();
     });
