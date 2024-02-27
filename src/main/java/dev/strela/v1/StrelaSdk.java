@@ -79,14 +79,32 @@ public class StrelaSdk {
     return minecraftServers.get(getCurrentMinecraftServerName());
   }
 
+  /**
+   * Creates a new Strela SDK
+   *
+   * @param kubernetesClient the Kubernetes client
+   * @param defaultNamespace the default namespace
+   * @return the Strela SDK
+   */
   public static StrelaSdk create(KubernetesClient kubernetesClient, String defaultNamespace) {
     return new StrelaSdk(kubernetesClient, defaultNamespace);
   }
 
+  /**
+   * Creates a new Strela SDK
+   *
+   * @param defaultNamespace the default namespace
+   * @return the Strela SDK
+   */
   public static StrelaSdk create(String defaultNamespace) {
     return new StrelaSdk(new KubernetesClientBuilder().build(), defaultNamespace);
   }
 
+  /**
+   * Creates a new Strela SDK
+   *
+   * @return the Strela SDK
+   */
   public static StrelaSdk create() {
     return new StrelaSdk(new KubernetesClientBuilder().build(), DEFAULT_NAMESPACE);
   }
