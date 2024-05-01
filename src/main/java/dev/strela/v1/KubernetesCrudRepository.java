@@ -3,9 +3,11 @@ package dev.strela.v1;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonDeletingOperation;
+import io.fabric8.kubernetes.client.informers.ResourceEventHandler;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -180,4 +182,97 @@ public abstract class KubernetesCrudRepository<R extends CustomResource> {
       .withName(name)
       .delete());
   }
+
+  /**
+   * Creates an informer builder for a resource in the default namespace
+   *
+   * @return a builder for the informer
+   */
+  public CrudResourceInformerBuilder createInformer() {
+    return createInformer(defaultNamespace);
+  }
+
+  /**
+   * Creates an informer builder for a resource
+   *
+   * @param namespace the namespace to inform the resource in
+   * @return a builder for the informer
+   */
+  public CrudResourceInformerBuilder createInformer(String namespace) {
+    return new CrudResourceInformerBuilder(namespace);
+  }
+
+  /**
+   * A builder for a resource informer
+   */
+  class CrudResourceInformerBuilder {
+
+    private final String namespace;
+
+    private Consumer<R> addHandler = ConsumerUtil.empty();
+    private BiConsumer<R, R> updateHandler = ConsumerUtil.emptyBi();
+    private Consumer<R> deleteHandler = ConsumerUtil.empty();
+
+
+    public CrudResourceInformerBuilder(String namespace) {
+      this.namespace = namespace;
+    }
+
+    /**
+     * Sets the handler for when a resource is added
+     *
+     * @param onAdd the handler for when a resource is added
+     * @return this builder
+     */
+    public CrudResourceInformerBuilder withAddHandler(Consumer<R> onAdd) {
+      this.addHandler = onAdd;
+      return this;
+    }
+
+    /**
+     * Sets the handler for when a resource is updated
+     *
+     * @param onUpdate the handler for when a resource is updated
+     * @return this builder
+     */
+    public CrudResourceInformerBuilder withUpdateHandler(BiConsumer<R, R> onUpdate) {
+      this.updateHandler = onUpdate;
+      return this;
+    }
+
+    /**
+     * Sets the handler for when a resource is deleted
+     *
+     * @param onDelete the handler for when a resource is deleted
+     * @return this builder
+     */
+    public CrudResourceInformerBuilder withDeleteHandler(Consumer<R> onDelete) {
+      this.deleteHandler = onDelete;
+      return this;
+    }
+
+    public void inform() {
+      CompletableFuture.runAsync(() -> {
+        kubernetesClient.resources(customResourceClass)
+          .inNamespace(namespace)
+          .inform(new ResourceEventHandler<R>() {
+            @Override
+            public void onAdd(R obj) {
+              addHandler.accept(obj);
+            }
+
+            @Override
+            public void onUpdate(R oldObj, R newObj) {
+              updateHandler.accept(oldObj, newObj);
+            }
+
+            @Override
+            public void onDelete(R obj, boolean deletedFinalStateUnknown) {
+              deleteHandler.accept(obj);
+            }
+          });
+      });
+    }
+  }
+
 }
