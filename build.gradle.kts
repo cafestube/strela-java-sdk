@@ -2,13 +2,13 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
   id("java")
+  id("maven-publish")
   alias(libs.plugins.shadow)
   alias(libs.plugins.fabricJavaGenerator)
-  alias(libs.plugins.sonatypeCentralPortalPublisher)
 }
 
-group = "dev.strela"
-version = "0.0.2"
+group = "eu.cafestube.strela"
+version = "0.0.3"
 
 repositories {
   mavenCentral()
@@ -35,41 +35,56 @@ sourceSets {
   }
 }
 
+java {
+  withSourcesJar()
+}
+
 tasks.withType<Javadoc> {
   source = files(source).minus(fileTree("build/generated/sources")).asFileTree
 }
 
-centralPortal {
-  username = project.findProperty("sonatypeUsername") as String
-  password = project.findProperty("sonatypePassword") as String
+publishing {
+  publications {
+    create<MavenPublication>("maven") {
+      groupId = "$group"
+      artifactId = "strela-java-sdk"
+      version = "${project.version}"
 
-  pom {
-    name.set("Strela Java SDK")
-    description.set("A Java SDK for Strela")
-    url.set("https://github.com/strela-dev/java-sdk")
+      artifact(tasks["jar"])
+      artifact(tasks["sourcesJar"])
 
-    developers {
-      developer {
-        id.set("fllipeis")
-        email.set("p.eistrach@gmail.com")
+      pom {
+        name.set("Strela Java SDK")
+        description.set("A Java SDK for Strela")
+        url.set("https://github.com/strela-dev/java-sdk")
+
+        developers {
+          developer {
+            id.set("fllipeis")
+            email.set("p.eistrach@gmail.com")
+          }
+        }
+        licenses {
+          license {
+            name.set("Apache-2.0")
+            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+          }
+        }
+        scm {
+          url.set("https://github.com/strela-dev/java-sdk.git")
+          connection.set("git:git@github.com:strela-dev/java-sdk.git")
+        }
       }
     }
-    licenses {
-      license {
-        name.set("Apache-2.0")
-        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+    repositories {
+      maven {
+        name = "cafestubeRepository"
+        credentials(PasswordCredentials::class)
+        url = uri("https://repo.cafestu.be/repository/maven-public/")
       }
-    }
-    scm {
-      url.set("https://github.com/strela-dev/java-sdk.git")
-      connection.set("git:git@github.com:strela-dev/java-sdk.git")
     }
   }
-}
 
-signing {
-  useGpgCmd()
-  sign(configurations.archives.get())
 }
 
 java {
