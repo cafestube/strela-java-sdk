@@ -49,6 +49,8 @@ spec:
                 type: string
               maxPlayers:
                 type: integer
+              serverType:
+                type: string
               template:
                 description: PodTemplateSpec describes the data a pod should have
                   when created from a template
@@ -7548,6 +7550,9 @@ spec:
                 type: string
               ready:
                 type: boolean
+              readyTime:
+                format: date-time
+                type: string
             type: object
         type: object
     served: true
