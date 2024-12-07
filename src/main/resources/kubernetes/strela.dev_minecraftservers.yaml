@@ -7539,8 +7539,13 @@ spec:
                   INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
                   Important: Run "make" to regenerate code after modifying this file
                 type: boolean
+              ingameTime:
+                format: date-time
+                type: string
               playerCount:
                 type: integer
+              podIP:
+                type: string
               ready:
                 type: boolean
             type: object
