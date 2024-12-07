@@ -205,7 +205,7 @@ public abstract class KubernetesCrudRepository<R extends CustomResource> {
   /**
    * A builder for a resource informer
    */
-  class CrudResourceInformerBuilder {
+  public class CrudResourceInformerBuilder {
 
     private final String namespace;
 

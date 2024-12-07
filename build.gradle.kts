@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "eu.cafestube.strela"
-version = "0.0.4"
+version = "0.0.5"
 
 repositories {
   mavenCentral()
